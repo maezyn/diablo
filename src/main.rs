@@ -1,23 +1,36 @@
 #![allow(unused)]
 
-use clap::Parser;
-use anyhow::{Context, Result};
+mod args;
+mod pattern;
+mod scan;
+mod rop;
 
-/// Search for a pattern in a file and display the lines of code that contain it
-#[derive(Parser)]
-struct Cli {
-    /// The pattern to look for
-    pattern: String,
-    /// The path to the file to read
-    path: std::path::PathBuf,
-}
+use anyhow::{Result};
+use args::{DiabloArgs, EntityType, PatternSubcommand, ScanSubcommand};
+use clap::Parser;
 
 fn main() -> Result<()> {
-    let args = Cli::parse();
-    let content = std::fs::read_to_string(&args.path)
-        .with_context(|| format!("could not read file `{}`", args.path.display()))?;
+    let args: DiabloArgs = DiabloArgs::parse();
 
-    diablo::find_matches(&content, &args.pattern, &mut std::io::stdout());
+    match args.entity_type {
+        EntityType::Pattern(pattern_args) => {
+            match pattern_args.command {
+                PatternSubcommand::Generate(pattern_args) => {
+                    pattern::generate(pattern_args.length);
+                }
+                PatternSubcommand::Offset(offset_args) => {
+                    pattern::offset(&offset_args.pattern);
+                }
+            }
+        }
+        EntityType::Scan(scan_args) => {
+            match scan_args.command {
+                ScanSubcommand::Scan(scan_args) => {
+                    scan::scan(scan_args.target);
+                }
+            }
+        }
+    }
 
     Ok(())
 }
