@@ -33,7 +33,7 @@ pub enum PatternSubcommand {
 #[derive(Debug, Args)]
 pub struct GeneratePattern {
     /// The length of the pattern
-    pub length: u32,
+    pub length: usize,
 }
 
 #[derive(Debug, Args)]
