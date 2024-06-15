@@ -1,6 +1,7 @@
 #![allow(unused)]
 
 mod args;
+mod elf;
 mod pattern;
 mod scan;
 mod rop;
